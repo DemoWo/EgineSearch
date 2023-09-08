@@ -1,0 +1,42 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.user
+
+#Folder user
+*.idea/
+*.vs/
+*cmake-build-debug/
+*cmake-build-debug-mingw/
+*.rar
+*build-VideoPlayerInQML-Desktop_Qt_6_5_0_MinGW_64_bit-Release
+*build-VideoPlayerInQML-Desktop_Qt_6_5_0_MinGW_64_bit-Debug
