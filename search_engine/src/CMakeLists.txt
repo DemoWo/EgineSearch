@@ -1,18 +1,14 @@
-cmake_minimum_required(VERSION 3.21.1)
+cmake_minimum_required (VERSION 3.25)
 
-add_executable(search_engine
-        main.cpp
-        converterjson.cpp
-#        EngineExceptions.cpp
-#        InvertedIndex.cpp
-#        SearchServer.cpp
-        ${MY_INCLUDE_PATH}/converterjson.h
-#        ${MY_INCLUDE_PATH}/EngineExceptions.h
-#        ${MY_INCLUDE_PATH}/InvertedIndex.h
-#        ${MY_INCLUDE_PATH}/version.h
-#        ${MY_INCLUDE_PATH}/SearchServer.h
+set(Src
+        "SearchServer.cpp"
+        "converterjson.cpp"
+        "InvertedIndex.cpp"
+        "main.cpp"
         )
-target_include_directories(search_engine PUBLIC ${MY_INCLUDE_PATH})
 
-file(COPY ../config DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
-file(COPY ../resources DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+add_executable(search_engine ${Src})
+
+target_link_libraries(search_engine nlohmann_json::nlohmann_json)
+target_include_directories(search_engine PUBLIC ${MY_INCLUDE_DIR})

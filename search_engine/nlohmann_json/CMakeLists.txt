@@ -57,7 +57,7 @@ endif ()
 ##
 include(GNUInstallDirs)
 
-set(NLOHMANN_JSON_TARGET_NAME               ${PROJECT_NAME})
+set(NLOHMANN_JSON_TARGET_NAME               ${PROJECT_NAME} ../tests/InvertedIndexTests.cpp ../tests/SearchServerTests.cpp)
 set(NLOHMANN_JSON_CONFIG_INSTALL_DIR        "${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}" CACHE INTERNAL "")
 set(NLOHMANN_JSON_INCLUDE_INSTALL_DIR       "${CMAKE_INSTALL_INCLUDEDIR}")
 set(NLOHMANN_JSON_TARGETS_EXPORT_NAME       "${PROJECT_NAME}Targets")

@@ -1,7 +1,3 @@
-//
-// Created by teena on 10.04.2023.
-//
-
 #ifndef SEARCHENGINE_SEARCHSERVER_H
 #define SEARCHENGINE_SEARCHSERVER_H
 #include <vector>

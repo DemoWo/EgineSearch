@@ -1,33 +1,29 @@
-cmake_minimum_required(VERSION 3.21.1)
+cmake_minimum_required(VERSION 3.25)
 project(search_engine)
+
 set(CMAKE_CXX_STANDARD 23)
 
-set(MY_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/include)
-set(MY_SOURCE_PATH ${CMAKE_SOURCE_DIR}/src)
+set(MY_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+set(MY_SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(MY_TEST_DIR ${CMAKE_SOURCE_DIR}/test)
 
 include(FetchContent)
-include(GoogleTest)
 
 FetchContent_Declare(
         googletest
-        URL
-        https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG release-1.12.1
 )
+FetchContent_MakeAvailable(googletest)
+
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
+FetchContent_MakeAvailable(json)
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-
-set(gtest_disable_pthreads on)
-
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-set(JSON_BuildTests OFF CACHE INTERNAL "")
 
-add_subdirectory(nlohmann_json)
 add_subdirectory(src)
-add_subdirectory(tests)
-
-target_link_libraries(search_engine PRIVATE nlohmann_json::nlohmann_json)
+add_subdirectory(test)
