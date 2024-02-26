@@ -1,79 +1,71 @@
 #include "InvertedIndex.h"
 
-void InvertedIndex::updateDocumentBase(const std::vector<std::string> &inputDocs)
+std::mutex mutexIndexMap;
+
+void InvertedIndex::UpdateDocumentBase(const std::vector<std::string>& input_docs)
 {
-    if (!docs.empty())
-        docs.clear();
-    for (const auto &doc : inputDocs)
-        docs.push_back(doc);
-    freqDictionary.clear();
-    std::mutex indexation_status;
-    std::vector <std::thread> indexationThreads;
-    for (int index = 0; index < docs.size(); ++index)
+    if (input_docs.empty())
     {
-        indexationThreads.emplace_back(std::thread([this, index]()
-                                                   {
-                                                       std::stringstream ss(docs[index]);
-                                                       std::string word;
-                                                       while (ss >> word)
-                                                       {
-                                                           std::for_each(word.begin(), word.end(), [](char &c)
-                                                           {
-                                                               c = tolower(c);
-                                                           });
-                                                           bool foundWord = false;
-                                                           for (auto it = freqDictionary.begin(); it != freqDictionary.end() && !foundWord; ++it)
-                                                           {
-                                                               if (it->first == word)
-                                                               {
-                                                                   foundWord = true;
-                                                                   bool foundDocId = false;
-                                                                   for (int i = 0; i < it->second.size() && !foundDocId; ++i)
-                                                                   {
-                                                                       if (it->second[i].doc_id == index)
-                                                                       {
-                                                                           foundDocId = true;
-                                                                           ++it->second[i].count;
-                                                                       }
-                                                                   }
-                                                                   if (!foundDocId)
-                                                                   {
-                                                                       Entry newEntry{static_cast<size_t>(index), 1};
-                                                                       it->second.push_back(newEntry);
-                                                                       std::sort(it->second.begin(), it->second.end(), Entry::compareDocId);
-                                                                   }
-                                                               }
-                                                           }
-                                                           if (!foundWord)
-                                                           {
-                                                               Entry newEntry{static_cast<size_t>(index), 1};
-                                                               freqDictionary.insert(std::pair<std::string,
-                                                                       std::vector<Entry>>(word, std::vector<Entry>{newEntry}));
-                                                           }
-                                                       }
-                                                   }));
+        std::cerr << "\t- Indexing: no content in docs content base\n";
+        return;
     }
 
-    for (auto &indexationThread : indexationThreads)
-        indexationThread.join();
-}
+    indexingIsOngoing = true;
 
-std::vector<Entry> InvertedIndex::getWordCount(const std::string &word)
-{
-    for (auto &pair : freqDictionary)
+    freq_dictionary.clear();
+    size_t docId = 0;
+
+    std::vector<std::thread> threads;
+    for (const auto& content : input_docs)
     {
-        if (pair.first == word)
-            return pair.second;
+        threads.emplace_back(&InvertedIndex::indexTheFile, this, content, docId);
+        ++docId;
     }
-    return std::vector<Entry>{};
+    indexingIsOngoing = false;
+
+    for (auto &it : threads)
+        it.join();
 }
 
-std::map<std::string, std::vector<Entry>> *InvertedIndex::getFreqDictionary()
-{
-    return &this->freqDictionary;
+void InvertedIndex::indexTheFile(const std::string& fileContent, size_t docId){
+    std::map<std::string, Entry> fileFreqDictionary;
+    Entry entry{};
+    entry.doc_id = docId;
+    entry.count = 1;
+    std::istringstream ist(fileContent);
+
+    for (std::string word; ist >> word; ) {
+        std::transform(word.begin(), word.end(), word.begin(),[](unsigned char c){ return std::tolower(c); });
+        std::pair<std::string, Entry> file_word_frequency {word, entry};
+        if (!fileFreqDictionary.emplace(file_word_frequency).second) {
+            fileFreqDictionary.find(word)->second.count += 1;
+        }
+    }
+
+    mutexIndexMap.lock();
+    for (const auto& wordIterator : fileFreqDictionary) {
+        std::pair<std::string, std::vector<Entry>> wordFrequency;
+        wordFrequency.first = wordIterator.first;
+        std::vector<Entry> entryVector {wordIterator.second};
+        wordFrequency.second = entryVector;
+        if (!freq_dictionary.emplace(wordFrequency).second)
+        {
+            freq_dictionary.find(wordFrequency.first)->second.push_back(wordIterator.second);
+        }
+    }
+    mutexIndexMap.unlock();
 }
 
-int InvertedIndex::getDocsCount()
-{
-    return static_cast<int>(this->docs.size());
+std::vector<Entry> InvertedIndex::GetWordCount(const std::string& word) {
+    if (indexingIsOngoing)
+    {
+        std::cout << "Index is ongoing, please repeat the request later.\n";
+        return {};
+    }
+    auto it = freq_dictionary.find(word);
+    if (it != freq_dictionary.end()) {
+        return it->second;
+    } else {
+        return {};
+    }
 }

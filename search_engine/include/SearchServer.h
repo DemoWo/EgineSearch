@@ -1,29 +1,49 @@
-#ifndef SEARCHENGINE_SEARCHSERVER_H
-#define SEARCHENGINE_SEARCHSERVER_H
+#ifndef SEARCHSERVER_H
+#define SEARCHSERVER_H
+
+#include <iostream>
+#include <utility>
 #include <vector>
-#include <set>
 #include <map>
+#include <set>
+#include <algorithm>
+#include <cmath>
+#include <unordered_set>
+#include <sstream>
+
 #include "InvertedIndex.h"
 
-struct RelativeIndex
-{
-    size_t docId;
+struct RelativeIndex{
+    size_t doc_id;
     float rank;
-    bool operator ==(const RelativeIndex& other) const
-    {
-        return (docId == other.docId && rank == other.rank);
+    bool operator ==(const RelativeIndex& other) const {
+        return (doc_id == other.doc_id && rank == other.rank);
     }
+    RelativeIndex(size_t doc_id, float rank): doc_id(doc_id), rank(rank){};
 };
 
-class SearchServer
-{
-private:
-    InvertedIndex* index;
-    int responsesLimit;
+class SearchServer{
 public:
-    SearchServer(InvertedIndex* idx, int rLimit) : index(idx), responsesLimit(rLimit) {};
-    ~SearchServer() = default;
-    std::vector<std::vector<RelativeIndex>> search(const std::vector<std::string> &queriesInput);
-    std::vector <std::pair <std::string, int>> parseString(const std::string &text);
+
+    /**
+    * @param idx в конструктор класса передаётся ссылка на класс
+    InvertedIndex,
+    * чтобы SearchServer мог узнать частоту слов встречаемых в
+    запросе
+    */
+    SearchServer(InvertedIndex  idx) : _index(std::move(idx)){ };
+
+    /**
+    * Метод обработки поисковых запросов
+    * @param queries_input поисковые запросы взятые из файла
+    requests.json
+    * @return возвращает отсортированный список релевантных ответов для
+    заданных запросов
+    */
+    std::vector<std::vector<RelativeIndex>> search(const std::vector<std::string>& queries_input);
+private:
+    InvertedIndex _index;
 };
-#endif //SEARCHENGINE_SEARCHSERVER_H
+
+
+#endif //SEARCHSERVER_H
