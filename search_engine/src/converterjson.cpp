@@ -1,4 +1,4 @@
-#include "ConverterJSON.h"
+#include "converterjson.h"
 
 bool ConverterJSON::LoadConfig(){
     auto config_file = std::ifstream("config.json");
@@ -119,4 +119,5 @@ void ConverterJSON::PutAnswers(const std::vector<std::vector<RelativeIndex>>& an
     file["answers"] = answ;
 
     answers_file << file.dump(4);
+    answers_file.close();
 }

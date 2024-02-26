@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.2)
 project(search_engine)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 11)
 
 set(MY_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 set(MY_SRC_DIR ${CMAKE_SOURCE_DIR}/src)
