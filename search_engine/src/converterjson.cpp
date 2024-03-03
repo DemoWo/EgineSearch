@@ -40,7 +40,7 @@ bool ConverterJSON::LoadConfig(){
     for (const auto& f: conf["files"]) {
         cf.files.push_back(f);
     }
-
+    config_file.close();
     return true;
 }
 
@@ -83,7 +83,7 @@ bool ConverterJSON::LoadRequests() {
     for (const auto& r: requests["requests"]) {
         req.requests.push_back(r);
     }
-
+    requests_file.close();
     return true;
 }
 
