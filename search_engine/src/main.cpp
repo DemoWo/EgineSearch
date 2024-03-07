@@ -21,11 +21,11 @@ int main() {
     }
 
     std::cout << converterJSON.cf.config.name << ((converterJSON.cf.config.version.empty())? "" : " version: ") << converterJSON.cf.config.version << std::endl;
-
+    int max_responses = converterJSON.cf.config.max_responses;
     auto texts = converterJSON.GetTextDocuments();
     invertedIndex.UpdateDocumentBase(texts);
     SearchServer srv(invertedIndex);
-    auto result = srv.search(converterJSON.GetRequests());
+    auto result = srv.search(converterJSON.GetRequests(), max_responses);
     converterJSON.PutAnswers(result);
 
     std::cout << "The search has been completed";

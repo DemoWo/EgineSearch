@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "SearchServer.h"
+#include "converterjson.h"
 
 using namespace std;
 
@@ -20,10 +21,13 @@ TEST(TestCaseSearchServer, TestSimple) {
             {
             }
     };
+    auto converterJSON = ConverterJSON();
+    converterJSON.LoadConfig();
+    int max_responses = converterJSON.cf.config.max_responses;
     InvertedIndex idx;
     idx.UpdateDocumentBase(docs);
     SearchServer srv(idx);
-    std::vector<vector<RelativeIndex>> result = srv.search(request);
+    std::vector<vector<RelativeIndex>> result = srv.search(request, max_responses);
     ASSERT_EQ(result, expected);
 }
 
@@ -62,9 +66,13 @@ TEST(TestCaseSearchServer, TestTop5) {
                     {2, 0.666666687}
             }
     };
+    auto converterJSON = ConverterJSON();
+    converterJSON.LoadConfig();
+    int max_responses = converterJSON.cf.config.max_responses;
     InvertedIndex idx;
     idx.UpdateDocumentBase(docs);
     SearchServer srv(idx);
-    std::vector<vector<RelativeIndex>> result = srv.search(request);
+    std::vector<vector<RelativeIndex>> result = srv.search(request, max_responses);
+
     ASSERT_EQ(result, expected);
 }

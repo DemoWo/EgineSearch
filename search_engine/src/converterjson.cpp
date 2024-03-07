@@ -2,10 +2,10 @@
 
 bool ConverterJSON::LoadConfig(){
     auto config_file = std::ifstream("config.json");
-
     if(!config_file.is_open()){
         config_file = std::ifstream("./examples/config.json");
         if(!config_file.is_open()){
+            cf.config.max_responses = 5;
             std::cerr << "config file is missing." << std::endl;
             return false;
         }
@@ -13,7 +13,6 @@ bool ConverterJSON::LoadConfig(){
 
     nlohmann::json conf;
     config_file >> conf;
-
     if(conf["config"].is_null()){
         std::cerr << "config file is empty." << std::endl;
         return false;
@@ -63,7 +62,6 @@ int ConverterJSON::GetResponsesLimit() const {
 bool ConverterJSON::LoadRequests() {
 
     auto requests_file = std::ifstream("requests.json");
-
     if(!requests_file.is_open()){
         requests_file = std::ifstream("./examples/requests.json");
         if(!requests_file.is_open()){

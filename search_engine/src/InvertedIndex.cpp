@@ -9,7 +9,6 @@ void InvertedIndex::UpdateDocumentBase(const std::vector<std::string>& input_doc
         std::cerr << "\t- Indexing: no content in docs content base\n";
         return;
     }
-
     indexingIsOngoing = true;
 
     freq_dictionary.clear();
